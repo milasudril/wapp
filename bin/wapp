@@ -1,0 +1,17 @@
+#!/bin/bash
+
+url=$1
+
+script_source=$(readlink -f ${BASH_SOURCE[0]})
+script_dirname=$(dirname "${script_source}")
+
+skel=${script_dirname}/../share/wapp/ff_profile_skeleton
+output_dir=$(mktemp -d)
+
+cp -a "${skel}/." "${output_dir}"
+
+firefox --no-remote --new-instance --profile "$output_dir" "$url"
+
+rm -rf "${output_dir}"
+trap "exit 1" HUP INT PIPE QUIT TERM
+trap 'rm -rf "${output_dir}"' EXIT
